@@ -1,0 +1,219 @@
+<html>
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" />
+        <style>
+            /* CSS */
+
+        </style>
+
+        <title>Title</title>
+    </head>
+    <body>
+        <!-- HTML -->
+
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="//cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
+
+        <script>
+
+
+
+            var config ={
+                type: Phaser.AUTO,
+                width: 600,
+                height: 500,
+                physics: {
+                    default: 'arcade',
+                    gravity: { y: 5},
+                    debug:false
+                },
+
+                scene:{
+                    preload: preload,
+                    create: create,
+                    update: update,
+                },
+           };
+
+           let game = new Phaser.Game(config);
+           let player;
+           let traget;
+           let enter;
+           let shot;
+           let xSpeed = 0;
+           let ySpeed = 0;
+           let tragetXSpeed = 1;
+           let tragetYSpeed = 1;
+           const ACCEL = 4;
+           let tragetAccel = 4;
+           let accuracy = 50;
+           let score = 0;
+           let scoreText = "";
+           let timerText = "";
+           let timer = 0;
+           let gameover = false;
+
+                function preload (){
+                    this.load.image('background','background.jpg')
+                    this.load.image('crosshair','crosshair.png')
+                    this.load.audio('shot','gun.mp3')
+                    this.load.audio('hitsound','hit.mp3')
+                    this.load.audio('backgroundMuisc','background.mp3')
+                    this.load.image('traget','traget.png')
+                    this.load.image('explosion','explosion.png')
+
+                }
+
+                function create (){
+                    this.add.image(300,250,'background')
+                    scoreText = this.add.text(16,16, 'score: 0',{ fontSize: '32px', fill: '#FF0000'})
+                    timerText = this.add.text(425,16,'timer: 0',{ fontSize: '32px', fill: '#FF0000'})
+
+
+                    traget = this.physics.add.sprite(200,150, 'traget')
+                    traget.setCollideWorldBounds(true);
+                    player = this.physics.add.sprite(300,250,'crosshair')
+                    player.setScale(0.2);
+                    player.setCollideWorldBounds(true);
+
+
+                    cursors = this.input.keyboard.createCursorKeys();
+                    enter = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER)
+                    shot = this.sound.add('shot')
+                    backgroundMuisc = this.sound.add('backgroundMuisc')
+                    hitsound = this.sound.add('hitsound')
+
+
+                    backgroundMuisc.play()
+
+                    interval = setInterval(function(){
+                        timer += 1;
+                        timerText.setText('timer:' + timer)
+                        if(timer >= 61){
+                            gameover = true;
+                            endGame();
+                        }
+
+
+                     }, 1000)
+
+
+                }
+
+                    function update (){
+                        if(gameover){
+                            return;
+                        }
+
+                         if(traget.x >= 530){
+                        traget.x = 529;
+                        tragetXSpeed = tragetXSpeed *(-1);
+                        traget.setVelocityX(tragetXSpeed);
+                    }else {
+                        traget.x = traget.x + tragetXSpeed;
+
+                    }
+
+                     if(traget.x <= 70){
+                        traget.x = 69;
+                        tragetXSpeed = tragetXSpeed *(-1);
+                        traget.setVelocityX(tragetXSpeed);
+
+                    }else {
+                       traget.x = traget.x + tragetXSpeed;
+                    }
+
+                    if(traget.y >= 442){
+                        traget.y = 440;
+                        tragetYSpeed = tragetYSpeed *(-1);
+                        traget.setVelocityY(tragetYSpeed);
+
+                    }else {
+                          traget.y = traget.y + tragetYSpeed;
+                    }
+
+                   if(traget.y <= 58){
+                      traget.y = 60
+                       tragetYSpeed = tragetYSpeed *(-1);
+                        traget.setVelocityY(tragetYSpeed);
+
+                   }else {
+                        traget.y = traget.y + tragetYSpeed;
+                   }
+
+                  //player crosshair movement
+                  if(cursors.left.isDown){
+                      xSpeed = xSpeed - ACCEL;
+                      player.setVelocityX(xSpeed)
+                  }
+                  if(cursors.right.isDown){
+                      xSpeed = xSpeed + ACCEL;
+                      player.setVelocityX(xSpeed)
+
+                  }
+                  if(cursors.up.isDown){
+                      ySpeed = ySpeed - ACCEL;
+                      player.setVelocityY(ySpeed)
+                  }
+                  if(cursors.down.isDown){
+                      ySpeed = ySpeed + ACCEL;
+                      player.setVelocityY(ySpeed)
+                  }
+
+                  if(Phaser.Input.Keyboard.JustDown(enter)){
+                      //fire
+                      shot.play()
+                    if(Math.abs(player.x - traget.x) < accuracy && Math.abs(player.y - traget.y) < accuracy){
+                        hit()
+                    } else {
+                        miss()
+                    }
+                  }
+
+                      }
+                    //changing score
+                    function hit(){
+                        hitsound.play()
+                        score = score + 10;
+                        scoreText.setText('score:'+score)
+                        restPlayer()
+                    }
+                   // when they miss they lose one point
+                    function miss(){
+                        score = score -1;
+                        scoreText.setText('score:'+score)
+
+
+                    }
+                    // set the corsshair back to the middle
+                    function restPlayer(){
+                        player.x = 300;
+                        player.y = 250;
+                        player.setVelocityX(0)
+                        player.setVelocityY(0)
+                        xSpeed = 0;
+                        xSpeed = 0;
+
+
+                    }
+                    function endGame(){
+                        traget.destroy();
+                        player.destroy();
+                        timerText.setText('')
+                        clearInterval(interval)
+                    }
+
+
+
+
+
+
+
+
+
+        </script>
