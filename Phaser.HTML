@@ -57,18 +57,18 @@
            let timerText = "";
            let timer = 0;
            let gameover = false;
-
+                //preload load everything into phaser before starting anything
                 function preload (){
                     this.load.image('background','background.jpg')
                     this.load.image('crosshair','crosshair.png')
                     this.load.audio('shot','gun.mp3')
                     this.load.audio('hitsound','hit.mp3')
-                    this.load.audio('backgroundMuisc','background.mp3')
+                    this.load.audio('backgroundMuisc','backgroundv2.mp3')
                     this.load.image('traget','traget.png')
                     this.load.image('explosion','explosion.png')
 
                 }
-
+                //create the that was in preload,image,music,ext
                 function create (){
                     this.add.image(300,250,'background')
                     scoreText = this.add.text(16,16, 'score: 0',{ fontSize: '32px', fill: '#FF0000'})
@@ -82,7 +82,7 @@
                     player.setCollideWorldBounds(true);
 
 
-                    cursors = this.input.keyboard.createCursorKeys();
+                    keys = this.input.keyboard.addKeys("W,A,S,D");
                     enter = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER)
                     shot = this.sound.add('shot')
                     backgroundMuisc = this.sound.add('backgroundMuisc')
@@ -90,7 +90,7 @@
 
 
                     backgroundMuisc.play()
-
+                    //timer it will go up 1 sec but once it reach 61 the game will end
                     interval = setInterval(function(){
                         timer += 1;
                         timerText.setText('timer:' + timer)
@@ -109,7 +109,7 @@
                         if(gameover){
                             return;
                         }
-
+                        //traget movent 
                          if(traget.x >= 530){
                         traget.x = 529;
                         tragetXSpeed = tragetXSpeed *(-1);
@@ -147,20 +147,20 @@
                    }
 
                   //player crosshair movement
-                  if(cursors.left.isDown){
+                  if(keys.A.isDown){
                       xSpeed = xSpeed - ACCEL;
                       player.setVelocityX(xSpeed)
                   }
-                  if(cursors.right.isDown){
+                  if(keys.D.isDown){
                       xSpeed = xSpeed + ACCEL;
                       player.setVelocityX(xSpeed)
 
                   }
-                  if(cursors.up.isDown){
+                  if(keys.W.isDown){
                       ySpeed = ySpeed - ACCEL;
                       player.setVelocityY(ySpeed)
                   }
-                  if(cursors.down.isDown){
+                  if(keys.S.isDown){
                       ySpeed = ySpeed + ACCEL;
                       player.setVelocityY(ySpeed)
                   }
@@ -169,9 +169,9 @@
                       //fire
                       shot.play()
                     if(Math.abs(player.x - traget.x) < accuracy && Math.abs(player.y - traget.y) < accuracy){
-                        hit()
+                        hit()// accuracy it like how big is the hit box
                     } else {
-                        miss()
+                        miss() // if they didnt hit in the hit box range it a miss
                     }
                   }
 
@@ -179,13 +179,13 @@
                     //changing score
                     function hit(){
                         hitsound.play()
-                        score = score + 10;
+                        score = score + 10; // if the player hit the traget then add 10 points
                         scoreText.setText('score:'+score)
                         restPlayer()
                     }
                    // when they miss they lose one point
                     function miss(){
-                        score = score -1;
+                        score = score -5; // if the traget miss than subtract 5 points can go into the negtive
                         scoreText.setText('score:'+score)
 
 
@@ -201,6 +201,7 @@
 
 
                     }
+                    //end the game
                     function endGame(){
                         traget.destroy();
                         player.destroy();
