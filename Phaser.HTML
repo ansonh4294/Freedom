@@ -15,6 +15,11 @@
     <body>
         <!-- HTML -->
 
+        <h1> WSDA to move the crosshair</h1>
+        <h1> press enter to shoot</h1>
+        <h1> you have up to 60 second</h1>
+        <h1>refresh by reloading the button</h1>
+
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"></script>
         <script src="//cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
@@ -56,6 +61,12 @@
            let scoreText = "";
            let timerText = "";
            let timer = 0;
+           var explosion;
+          // var pointer = scene.input.activePointer ;
+        //   var x = pointer.x;
+        //   var y = pointer.y;
+        //   var worldX = pointer.worldX;
+        //   var worldY = pointer.worldY;
            let gameover = false;
                 //preload load everything into phaser before starting anything
                 function preload (){
@@ -63,9 +74,10 @@
                     this.load.image('crosshair','crosshair.png')
                     this.load.audio('shot','gun.mp3')
                     this.load.audio('hitsound','hit.mp3')
-                    this.load.audio('backgroundMuisc','backgroundv2.mp3')
+                    this.load.audio('backgroundMuisc','background.mp3')
                     this.load.image('traget','traget.png')
-                    this.load.image('explosion','explosion.png')
+                    this.load.spritesheet('explosion','explosioneffect.png',{frameWidth:50, frameHeight: 50});
+
 
                 }
                 //create the that was in preload,image,music,ext
@@ -103,13 +115,22 @@
                      }, 1000)
 
 
+                    
+                     this.anims.create({
+                        key: 'explosion',
+                        frames: this.anims.generateFrameNumbers('explosion',{start: 0, end: 4}),
+                        frameRate: 10,
+                        repeat: 0
+                    })
+
+
                 }
 
                     function update (){
                         if(gameover){
                             return;
                         }
-                        //traget movent 
+                        //traget movent
                          if(traget.x >= 530){
                         traget.x = 529;
                         tragetXSpeed = tragetXSpeed *(-1);
@@ -147,6 +168,9 @@
                    }
 
                   //player crosshair movement
+
+
+
                   if(keys.A.isDown){
                       xSpeed = xSpeed - ACCEL;
                       player.setVelocityX(xSpeed)
@@ -179,6 +203,8 @@
                     //changing score
                     function hit(){
                         hitsound.play()
+                        player.anims.play('explosion',true);
+                        //explosion = this.physics.add.sprite(traget.x,target.y,'explosion')
                         score = score + 10; // if the player hit the traget then add 10 points
                         scoreText.setText('score:'+score)
                         restPlayer()
