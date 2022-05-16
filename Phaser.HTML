@@ -52,9 +52,9 @@
            let shot;
            let xSpeed = 0;
            let ySpeed = 0;
-           let tragetXSpeed = 1;
-           let tragetYSpeed = 1;
-           const ACCEL = 4;
+           let tragetXSpeed = 2;
+           let tragetYSpeed = 2;
+           const ACCEL = 6;
            let tragetAccel = 4;
            let accuracy = 50;
            let score = 0;
@@ -75,19 +75,21 @@
                     this.load.audio('shot','gun.mp3')
                     this.load.audio('hitsound','hit.mp3')
                     this.load.audio('backgroundMuisc','background.mp3')
-                    this.load.image('traget','traget.png')
-                    this.load.spritesheet('explosion','explosioneffect.png',{frameWidth:50, frameHeight: 50});
+                    this.load.spritesheet('traget','traget.png',{frameWidth:140, frameHeight:110});
+                    this.load.spritesheet('explosion','explosioneffect.png',{frameWidth:200, frameHeight: 200});
 
 
                 }
                 //create the that was in preload,image,music,ext
+               // var prompt = prompt("what size do you want for the target (input only numbers?)")
                 function create (){
                     this.add.image(300,250,'background')
                     scoreText = this.add.text(16,16, 'score: 0',{ fontSize: '32px', fill: '#FF0000'})
                     timerText = this.add.text(425,16,'timer: 0',{ fontSize: '32px', fill: '#FF0000'})
-
+                        
 
                     traget = this.physics.add.sprite(200,150, 'traget')
+                    // traget.setScale(prompt)
                     traget.setCollideWorldBounds(true);
                     player = this.physics.add.sprite(300,250,'crosshair')
                     player.setScale(0.2);
@@ -115,7 +117,13 @@
                      }, 1000)
 
 
-                    
+                    this.anims.create({
+                        key: 'cycle',
+                        frames: this.anims.generateFrameNumbers('traget',{start: 0, end: 0}),
+                        frameRate:10,
+                        repeat:-1
+                    })
+                     
                      this.anims.create({
                         key: 'explosion',
                         frames: this.anims.generateFrameNumbers('explosion',{start: 0, end: 4}),
@@ -168,7 +176,7 @@
                    }
 
                   //player crosshair movement
-
+                    console.log(traget)
 
 
                   if(keys.A.isDown){
@@ -203,11 +211,19 @@
                     //changing score
                     function hit(){
                         hitsound.play()
-                        player.anims.play('explosion',true);
+
+                        traget.on('animationcomplete',function(){
+                            traget.anims.play('cycle',true)
+                            
+                            restPlayer()
+                        })
+
+
+                        traget.anims.play('explosion',true);
                         //explosion = this.physics.add.sprite(traget.x,target.y,'explosion')
                         score = score + 10; // if the player hit the traget then add 10 points
                         scoreText.setText('score:'+score)
-                        restPlayer()
+
                     }
                    // when they miss they lose one point
                     function miss(){
