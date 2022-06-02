@@ -1,4 +1,4 @@
-<html>
+ <html>
     <head>
         <!-- Required meta tags -->
         <meta charset="utf-8">
@@ -52,8 +52,9 @@
            let shot;
            let xSpeed = 0;
            let ySpeed = 0;
-           let tragetXSpeed = 2;
-           let tragetYSpeed = 2;
+           let tragetXSpeed = 1;
+           let tragetYSpeed = 1;
+           
            const ACCEL = 6;
            let tragetAccel = 4;
            let accuracy = 50;
@@ -114,7 +115,7 @@
                         }
 
 
-                     }, 1000)
+                     }, 1000 )
 
 
                     this.anims.create({
@@ -154,7 +155,7 @@
                         traget.setVelocityX(tragetXSpeed);
 
                     }else {
-                       traget.x = traget.x + tragetXSpeed;
+                      traget.x = traget.x + tragetXSpeed;
                     }
 
                     if(traget.y >= 442){
@@ -166,14 +167,14 @@
                           traget.y = traget.y + tragetYSpeed;
                     }
 
-                   if(traget.y <= 58){
+                  if(traget.y <= 58){
                       traget.y = 60
-                       tragetYSpeed = tragetYSpeed *(-1);
+                      tragetYSpeed = tragetYSpeed *(-1);
                         traget.setVelocityY(tragetYSpeed);
 
-                   }else {
+                  }else {
                         traget.y = traget.y + tragetYSpeed;
-                   }
+                  }
 
                   //player crosshair movement
                     console.log(traget)
